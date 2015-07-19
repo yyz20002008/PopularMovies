@@ -2,4 +2,32 @@
     <string name="app_name">PopularMovies</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+
+    <string name="title_activity_detail">Details</string>
+
+    <!-- Preference -->
+
+    <string name="sorting_key" translatable="false">sort_by</string>
+    <string name="sorting_label">Sort order</string>
+
+    <string name="sorting_label_popular">Most popular first</string>
+    <string name="sorting_label_rating">Highest-rated first</string>
+
+    <string name="sorting_value_popular" translatable="false">popularity.desc</string>
+    <string name="sorting_value_rating" translatable="false">vote_average.desc</string>
+
+    <string name="sorting_default_value" translatable="false">popularity.desc</string>
+    <string name="vote_count_default_value">90</string>
+    <!-- API -->
+
+    <string name="api_key">Please read readme or see P1 Guide to get API KEY</string>
+    <string name="api_poster_default_size">w342</string>
+
+    <!-- labels -->
+    <string name="label_movie_release_date">Release date:</string>
+    <string name="label_movie_overview">Overview</string>
+    <string name="label_movie_rating">Rating: </string>
+    <string name="title_activity_setting">Settings</string>
+
 </resources>
