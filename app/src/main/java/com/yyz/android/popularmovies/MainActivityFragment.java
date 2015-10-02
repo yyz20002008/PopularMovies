@@ -1,11 +1,16 @@
 package com.yyz.android.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,18 +31,32 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 
 /**
  * A placeholder fragment containing a simple view.
  * //API Key: 6f033c5f82678f75ff76c30995ba38d6
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment
+       implements SharedPreferences.OnSharedPreferenceChangeListener{
+
+    private final String MAIN_TAG =MainActivityFragment.class.getSimpleName();
 
     public MainActivityFragment() {
+
+    }
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        void onItemSelected(Movie movie);
     }
 
-    public static final int MAX_PAGES = 10;
+
+    public static final int MAX_PAGES = 20;
     private boolean mIsLoading = false;
     private int mPagesLoaded = 0;
     private ImageAdapter mImages;
@@ -66,10 +85,10 @@ public class MainActivityFragment extends Fragment {
                 final String API_SORTING = PreferenceManager
                         .getDefaultSharedPreferences(getActivity())
                         .getString(
-                                getString(R.string.sorting_key),
+                               "sort_by",
                                 getString(R.string.sorting_default_value)
                         );
-
+                System.out.print("55555555555555"+API_SORTING);
                 //URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=6f033c5f82678f75ff76c30995ba38d6");
 
                 Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
@@ -139,6 +158,7 @@ public class MainActivityFragment extends Fragment {
 
 
         }
+        SharedPreferences sharedPref;
 
         private Collection<Movie> getMoviesDataFromJson(String jsonStr) throws JSONException {
             final String KEY_MOVIES = "results";
@@ -146,10 +166,35 @@ public class MainActivityFragment extends Fragment {
             JSONArray movies = json.getJSONArray(KEY_MOVIES);
             ArrayList<Movie> result = new ArrayList<Movie>();
 
-            for (int i = 0; i < movies.length(); i++) {
-                result.add(Movie.fromJson(movies.getJSONObject(i)));
+            final boolean fav = PreferenceManager
+                    .getDefaultSharedPreferences(getActivity())
+                    .getBoolean(
+                            getString(R.string.favorite_key),
+                            false
+                    );
+            System.out.println(" "+fav);
+            if(fav){
 
+                sharedPref =getActivity().getSharedPreferences(getString(R.string.label_movie_favorite), Context.MODE_PRIVATE);
+                Map<String,?> keys = sharedPref.getAll();
+                //when fav is true, then iterator favorite set inside of movie set load
+                for (int i = 0; i < movies.length(); i++) {
+                    for(Map.Entry<String,?> entry : keys.entrySet()){
+
+                        if(entry.getValue().equals(Movie.fromJson(movies.getJSONObject(i)).id)) {
+                            System.out.println( Movie.fromJson(movies.getJSONObject(i)).title);
+                            result.add(Movie.fromJson(movies.getJSONObject(i)));
+                        }
+                    }
+
+                }
             }
+            else {
+                for (int i = 0; i < movies.length(); i++) {
+                    result.add(Movie.fromJson(movies.getJSONObject(i)));
+                }
+            }
+
 
             return result;
         }
@@ -157,7 +202,6 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(Collection<Movie> ms) {
             if (ms == null) {
-
                 stopLoading();
                 return;
             }
@@ -180,8 +224,9 @@ public class MainActivityFragment extends Fragment {
         }
 
         mIsLoading = true;
-
-        new FetchMovieTask().execute(mPagesLoaded + 1);
+        if(isNetworkAvailable()){
+            new FetchMovieTask().execute(mPagesLoaded + 1);
+        }
     }
 
     private void stopLoading() {
@@ -193,11 +238,20 @@ public class MainActivityFragment extends Fragment {
 
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView=inflater.inflate(R.layout.fragment_main, container, false);
-
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .registerOnSharedPreferenceChangeListener(this);
+        Log.e(MAIN_TAG, "onCreatView Register");
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
         mImages=new ImageAdapter(getActivity());
         gridview.setAdapter(mImages);
@@ -228,7 +282,7 @@ public class MainActivityFragment extends Fragment {
                     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                         int lastInScreen = firstVisibleItem + visibleItemCount;
                         if (lastInScreen == totalItemCount) {
-                           startLoading();
+                            startLoading();
                         }
                     }
                 }
@@ -236,8 +290,69 @@ public class MainActivityFragment extends Fragment {
         );
 
         startLoading();
+
         return rootView;
     }
+
+    private boolean isTwoPane;
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (getActivity().findViewById(R.id.right_main) != null) {
+            isTwoPane = true;
+        } else {
+            isTwoPane = false;
+        }
+    }
+
+    public void onItemSelected(Movie movie) {
+        if (isTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putBundle(Movie.FLAG_MOVIE, movie.toBundle());
+
+            DetailActivityFragment fragment = new DetailActivityFragment();
+            fragment.setArguments(arguments);
+
+            FragmentTransaction ft=getFragmentManager().beginTransaction();
+
+            ft.replace(R.id.right_main, fragment).commit();
+        } else {
+            Intent intent = new Intent(getActivity(), DetailActivity.class)
+                    .putExtra(Movie.FLAG_MOVIE, movie.toBundle());
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+
+        mPagesLoaded=0;
+        startLoading();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e(MAIN_TAG, "OnResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.e(MAIN_TAG, "OnPause");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(MAIN_TAG, "OnDestroy Unregister");
+        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .unregisterOnSharedPreferenceChangeListener(this);
+
+    }
+
+
 
 
 

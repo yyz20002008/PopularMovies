@@ -1,11 +1,32 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <PreferenceCategory
+        android:key="cate1"
+        android:summary="Sorting"
+        android:title="Sorting_By" >
+    <CheckBoxPreference
+        android:key="@string/checksorting_key"
+        android:title="@string/checksorting_label"
+        android:checked="false"
+        />
     <ListPreference
         android:key="@string/sorting_key"
         android:title="@string/sorting_label"
         android:entries="@array/pref_sorting_options"
         android:entryValues="@array/pref_sorting_values"
-        android:defaultValue="@string/sorting_default_value" />
-    />
-
+        android:defaultValue="@string/sorting_default_value"
+        />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="cate2"
+        android:summary="Fav"
+        android:title="FavSetting" >
+    <CheckBoxPreference
+        android:key="@string/favorite_key"
+        android:title="@string/favorite_label"
+        android:summaryOff="@string/favorite_summaryoff"
+        android:summaryOn="@string/favorite_summaryon"
+        android:defaultValue="false"
+        />
+    </PreferenceCategory>
 </PreferenceScreen>

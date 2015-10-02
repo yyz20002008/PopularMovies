@@ -1,6 +1,7 @@
 package com.yyz.android.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -9,11 +10,17 @@ import android.view.MenuItem;
 
 public class MainActivity extends ActionBarActivity {
 
+    SharedPreferences sharedPref;
+    private String mLocation;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         setContentView(R.layout.activity_main);
+
     }
+
 
 
     @Override
@@ -38,6 +45,21 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+
+
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+    }
+
+
+
 
 
 }
