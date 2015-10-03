@@ -303,13 +303,14 @@ public class MainActivityFragment extends Fragment
         } else {
             isTwoPane = false;
         }
+        System.out.println("LLLLLLLLLLLL:"+isTwoPane);
     }
 
     public void onItemSelected(Movie movie) {
         if (isTwoPane) {
             Bundle arguments = new Bundle();
             arguments.putBundle(Movie.FLAG_MOVIE, movie.toBundle());
-
+            System.out.println(arguments);
             DetailActivityFragment fragment = new DetailActivityFragment();
             fragment.setArguments(arguments);
 

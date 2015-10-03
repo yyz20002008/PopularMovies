@@ -11,15 +11,15 @@
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/left_main"
         android:name="com.yyz.android.popularmovies.MainActivityFragment"
-        android:layout_width="0dp"
+        android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_weight="2"/>
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/right_main"
-        android:layout_width="0dp"
+        android:layout_width="400dp"
         android:layout_height="match_parent"
-        android:layout_weight="3"
+        android:layout_weight="4"
         />
 
 </LinearLayout>
