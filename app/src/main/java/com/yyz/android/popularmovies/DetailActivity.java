@@ -14,18 +14,18 @@ public class DetailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        /*if (savedInstanceState == null) {
-            Bundle arguments = new Bundle();
-            arguments.putBundle("com.yyz.android.popularmovies.FLAG_MOVIE",
-                    getIntent().getBundleExtra("com.yyz.android.popularmovies.FLAG_MOVIE"));
-
-            DetailActivityFragment fragment = new DetailActivityFragment();
-            fragment.setArguments(arguments);
-
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.detail_container, fragment)
-                    .commit();
-        }*/
+//        if (savedInstanceState == null) {
+//            Bundle arguments = new Bundle();
+//            arguments.putBundle("com.yyz.android.popularmovies.FLAG_MOVIE",
+//                    getIntent().getBundleExtra("com.yyz.android.popularmovies.FLAG_MOVIE"));
+//
+//            DetailActivityFragment fragment = new DetailActivityFragment();
+//            fragment.setArguments(arguments);
+//
+//            getSupportFragmentManager().beginTransaction()
+//                    .add(R.id.detail_container, fragment)
+//                    .commit();
+//        }
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

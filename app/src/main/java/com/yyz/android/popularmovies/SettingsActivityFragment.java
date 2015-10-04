@@ -61,6 +61,13 @@ public class SettingsActivityFragment extends PreferenceFragment
         }
 
         for(String key : keys.keySet()) {
+            if("checksorting_key".equals(key)) {
+                CheckBoxPreference checkBoxPreference = (CheckBoxPreference)findPreference("checksorting_key");
+                ListPreference sorting_pref = (ListPreference)findPreference("sort_by");
+                // System.out.println(preference.getKey());
+                sorting_pref.setEnabled(checkBoxPreference.isChecked());
+
+            }
             onSharedPreferenceChanged(pref, key);
         }
         Log.e(LOG_TAG, "triggerSharePreferencesChange");

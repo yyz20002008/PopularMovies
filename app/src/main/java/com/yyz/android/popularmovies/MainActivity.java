@@ -7,11 +7,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-
 public class MainActivity extends ActionBarActivity {
 
     SharedPreferences sharedPref;
     private String mLocation;
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,9 +19,33 @@ public class MainActivity extends ActionBarActivity {
         //PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         setContentView(R.layout.activity_main);
 
+//        if (findViewById(R.id.fragment_detail) != null) {
+//            mTwoPane = true;
+//
+//        } else {
+//            mTwoPane = false;
+//        }
+//        System.out.println("LLLLLLLLLLLL:"+mTwoPane);
     }
 
-
+//    @Override
+//    public void onItemSelected(Movie movie) {
+//        if (mTwoPane) {
+//            Bundle arguments = new Bundle();
+//            arguments.putBundle(Movie.FLAG_MOVIE, movie.toBundle());
+//
+//            DetailActivityFragment fragment = new DetailActivityFragment();
+//            fragment.setArguments(arguments);
+//
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.fragment_detail, fragment, Movie.FLAG_MOVIE)
+//                    .commit();
+//        } else {
+//            Intent intent = new Intent(this, DetailActivity.class)
+//                    .putExtra(Movie.FLAG_MOVIE, movie.toBundle());
+//            startActivity(intent);
+//        }
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -11,10 +11,12 @@
         />
     <ListPreference
         android:key="@string/sorting_key"
+        android:name="@string/sorting_key"
         android:title="@string/sorting_label"
         android:entries="@array/pref_sorting_options"
         android:entryValues="@array/pref_sorting_values"
         android:defaultValue="@string/sorting_default_value"
+        android:enabled="false"
         />
     </PreferenceCategory>
     <PreferenceCategory

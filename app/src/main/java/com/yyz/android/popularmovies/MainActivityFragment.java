@@ -56,10 +56,11 @@ public class MainActivityFragment extends Fragment
     }
 
 
-    public static final int MAX_PAGES = 20;
+    public static final int MAX_PAGES = 10;
     private boolean mIsLoading = false;
     private int mPagesLoaded = 0;
     private ImageAdapter mImages;
+    private static final String STATE_SCROLL_VIEW = "state_scroll_view";//saveinstance string
 
 
     public class FetchMovieTask extends AsyncTask<Integer, Void, Collection<Movie>> {
@@ -81,7 +82,7 @@ public class MainActivityFragment extends Fragment
                 final String API_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
                 final String API_PAGE = "page";
                 final String API_KEY = "api_key";
-                final String APT_VOTECOUNT="vote_count.gte";//only pull_up vote_counts>90, in case noise movie
+                final String API_VOTECOUNT="vote_count.gte";//only pull_up vote_counts>90, in case noise movie with high rating but very low voting
                 final String API_SORTING = PreferenceManager
                         .getDefaultSharedPreferences(getActivity())
                         .getString(
@@ -91,16 +92,32 @@ public class MainActivityFragment extends Fragment
                 System.out.print("55555555555555"+API_SORTING);
                 //URL url = new URL("http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=6f033c5f82678f75ff76c30995ba38d6");
 
-                Uri builtUri = Uri.parse(API_BASE_URL).buildUpon()
-                        .appendQueryParameter("sort_by", API_SORTING)
-                        .appendQueryParameter(API_PAGE, String.valueOf(page))
-                        .appendQueryParameter(APT_VOTECOUNT,getString(R.string.vote_count_default_value))
-                        .appendQueryParameter(API_KEY, getString(R.string.api_key))
-                        .build();
-
-
+                //check favorite checkbox is checked
+                final boolean fav = PreferenceManager
+                        .getDefaultSharedPreferences(getActivity())
+                        .getBoolean(
+                                getString(R.string.favorite_key),
+                                false
+                        );
+                Uri builtUri;
+                if(fav){
+                    builtUri= Uri.parse(API_BASE_URL).buildUpon()
+                            .appendQueryParameter(API_PAGE, String.valueOf(page))
+                            .appendQueryParameter(API_VOTECOUNT, getString(R.string.vote_count_default_value))
+                            .appendQueryParameter(API_KEY, getString(R.string.api_key))
+                            .build();
+                }
+                else {
+                    builtUri= Uri.parse(API_BASE_URL).buildUpon()
+                            .appendQueryParameter("sort_by", API_SORTING)
+                            .appendQueryParameter(API_PAGE, String.valueOf(page))
+                            .appendQueryParameter(API_VOTECOUNT, getString(R.string.vote_count_default_value))
+                            .appendQueryParameter(API_KEY, getString(R.string.api_key))
+                            .build();
+                }
                 Log.d(LOG_TAG, "QUERY URI: " + builtUri.toString());
                 URL url = new URL(builtUri.toString());
+
 
                 // Create the request to themoviedb.org, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -115,7 +132,6 @@ public class MainActivityFragment extends Fragment
                     return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
-
                 String line;
                 while ((line = reader.readLine()) != null) {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
@@ -155,11 +171,9 @@ public class MainActivityFragment extends Fragment
                 e.printStackTrace();
                 return null;
             }
-
-
         }
-        SharedPreferences sharedPref;
 
+        SharedPreferences sharedPref;
         private Collection<Movie> getMoviesDataFromJson(String jsonStr) throws JSONException {
             final String KEY_MOVIES = "results";
             JSONObject json = new JSONObject(jsonStr);
@@ -172,7 +186,7 @@ public class MainActivityFragment extends Fragment
                             getString(R.string.favorite_key),
                             false
                     );
-            System.out.println(" "+fav);
+            System.out.println("FAV: "+fav);
             if(fav){
 
                 sharedPref =getActivity().getSharedPreferences(getString(R.string.label_movie_favorite), Context.MODE_PRIVATE);
@@ -205,13 +219,10 @@ public class MainActivityFragment extends Fragment
                 stopLoading();
                 return;
             }
-
             mPagesLoaded++;
             stopLoading();
             mImages.addAll(ms);
-
         }
-
     }
 
     private void startLoading() {
@@ -246,16 +257,22 @@ public class MainActivityFragment extends Fragment
     }
 
 
+    // Create gridview
+    GridView gridview;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.e(MAIN_TAG, "onCreatView Register");
         View rootView=inflater.inflate(R.layout.fragment_main, container, false);
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .registerOnSharedPreferenceChangeListener(this);
-        Log.e(MAIN_TAG, "onCreatView Register");
-        GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
         mImages=new ImageAdapter(getActivity());
+        gridview = (GridView) rootView.findViewById(R.id.gridview);
         gridview.setAdapter(mImages);
-
+//        if(savedInstanceState==null) {
+//
+//        } else {
+//            gridview.onRestoreInstanceState(savedInstanceState.getParcelable(STATE_SCROLL_VIEW));
+//        }
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
@@ -266,9 +283,7 @@ public class MainActivityFragment extends Fragment
                     return;
                 }
 
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra(movie.FLAG_MOVIE, movie.toBundle());
-                getActivity().startActivity(intent);
+               // onItemSelected(movie);
             }
         });
 
@@ -286,37 +301,36 @@ public class MainActivityFragment extends Fragment
                         }
                     }
                 }
-
         );
 
         startLoading();
-
         return rootView;
     }
+
 
     private boolean isTwoPane;
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getActivity().findViewById(R.id.right_main) != null) {
+        if (getActivity().findViewById(R.id.fragment_detail) != null) {
             isTwoPane = true;
         } else {
             isTwoPane = false;
         }
-        System.out.println("LLLLLLLLLLLL:"+isTwoPane);
+        System.out.println("LLLLLLLLLLLL:"+getActivity()+"-----"+isTwoPane);
     }
 
     public void onItemSelected(Movie movie) {
         if (isTwoPane) {
             Bundle arguments = new Bundle();
             arguments.putBundle(Movie.FLAG_MOVIE, movie.toBundle());
-            System.out.println(arguments);
+
             DetailActivityFragment fragment = new DetailActivityFragment();
             fragment.setArguments(arguments);
 
-            FragmentTransaction ft=getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.replace(R.id.fragment_detail, fragment).commit();
 
-            ft.replace(R.id.right_main, fragment).commit();
         } else {
             Intent intent = new Intent(getActivity(), DetailActivity.class)
                     .putExtra(Movie.FLAG_MOVIE, movie.toBundle());
@@ -325,10 +339,13 @@ public class MainActivityFragment extends Fragment
     }
 
     @Override
+    //after changing sorting criteria, gridview will clean and reload
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
         mPagesLoaded=0;
+        mImages=new ImageAdapter(getActivity());
         startLoading();
+        gridview.setAdapter(mImages);
 
     }
 
@@ -341,7 +358,7 @@ public class MainActivityFragment extends Fragment
     @Override
     public void onPause() {
         super.onPause();
-        Log.e(MAIN_TAG, "OnPause");
+        Log.e(MAIN_TAG, "OnPause gridview to null");
     }
 
     @Override
@@ -352,9 +369,4 @@ public class MainActivityFragment extends Fragment
                 .unregisterOnSharedPreferenceChangeListener(this);
 
     }
-
-
-
-
-
 }
