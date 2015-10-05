@@ -339,7 +339,7 @@ public class MainActivityFragment extends Fragment
         } else {
             isTwoPane = false;
         }
-        System.out.println("LLLLLLLLLLLL:"+getActivity()+"-----"+isTwoPane);
+        System.out.println("LLLLLLL-----"+isTwoPane);
     }
 
     public void onItemSelected(Movie movie) {
@@ -347,6 +347,7 @@ public class MainActivityFragment extends Fragment
             Bundle arguments = new Bundle();
             arguments.putBundle(Movie.FLAG_MOVIE, movie.toBundle());
 
+            System.out.println(arguments.getBundle(Movie.FLAG_MOVIE));
             DetailActivityFragment fragment = new DetailActivityFragment();
             fragment.setArguments(arguments);
 

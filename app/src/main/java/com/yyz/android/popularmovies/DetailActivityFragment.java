@@ -53,12 +53,21 @@ public class DetailActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Movie.FLAG_MOVIE)) {
-            movie = new Movie(intent.getBundleExtra(Movie.FLAG_MOVIE));
-            ((TextView) rootView.findViewById(R.id.movie_title)).setText(movie.title);
+        rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            movie= new Movie(arguments.getBundle(Movie.FLAG_MOVIE));
+        }
+        else {
+
+            Intent intent = getActivity().getIntent();
+            if (intent != null && intent.hasExtra(Movie.FLAG_MOVIE)) {
+                movie = new Movie(intent.getBundleExtra(Movie.FLAG_MOVIE));
+            }
+        }
+        System.out.println(movie);
+        ((TextView) rootView.findViewById(R.id.movie_title)).setText(movie.title);
             ((TextView) rootView.findViewById(R.id.movie_rating)).setText(movie.getRating());
             ((TextView) rootView.findViewById(R.id.movie_overview)).setText(movie.overview);
             ((TextView) rootView.findViewById(R.id.movie_release_date)).setText(movie.release_date);
@@ -113,7 +122,7 @@ public class DetailActivityFragment extends Fragment {
             new FetchReviewTask().execute(movie.id);
 
 
-        }
+       // }
         return rootView;
     }
 
