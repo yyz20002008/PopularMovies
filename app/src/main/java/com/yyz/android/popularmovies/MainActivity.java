@@ -69,12 +69,7 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
 
-
-    }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {

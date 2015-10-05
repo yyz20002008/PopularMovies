@@ -46,21 +46,15 @@ public class MainActivityFragment extends Fragment
     public MainActivityFragment() {
 
     }
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface Callback {
-        void onItemSelected(Movie movie);
-    }
 
 
     public static final int MAX_PAGES = 10;
     private boolean mIsLoading = false;
     private int mPagesLoaded = 0;
     private ImageAdapter mImages;
-    private static final String STATE_SCROLL_VIEW = "state_scroll_view";//saveinstance string
+    Collection<Movie> MovieSet;
+    ArrayList<Movie> list;
+
 
 
     public class FetchMovieTask extends AsyncTask<Integer, Void, Collection<Movie>> {
@@ -268,11 +262,9 @@ public class MainActivityFragment extends Fragment
         mImages=new ImageAdapter(getActivity());
         gridview = (GridView) rootView.findViewById(R.id.gridview);
         gridview.setAdapter(mImages);
-//        if(savedInstanceState==null) {
-//
-//        } else {
-//            gridview.onRestoreInstanceState(savedInstanceState.getParcelable(STATE_SCROLL_VIEW));
-//        }
+
+
+
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
@@ -283,7 +275,7 @@ public class MainActivityFragment extends Fragment
                     return;
                 }
 
-               // onItemSelected(movie);
+               onItemSelected(movie);
             }
         });
 
@@ -306,6 +298,8 @@ public class MainActivityFragment extends Fragment
         startLoading();
         return rootView;
     }
+
+
 
 
     private boolean isTwoPane;

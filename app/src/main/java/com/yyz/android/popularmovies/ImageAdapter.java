@@ -16,7 +16,7 @@ import java.util.Collection;
 /**
  * Created by James Yang on 7/12/2015.
  */
-public class ImageAdapter extends BaseAdapter{
+public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private final ArrayList<Movie> mMovies;
     private final String BASE_URL = "http://image.tmdb.org/t/p/";

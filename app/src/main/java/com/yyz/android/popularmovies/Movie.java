@@ -1,6 +1,8 @@
 package com.yyz.android.popularmovies;
 
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,7 +11,7 @@ import org.json.JSONObject;
  * Created by James Yang on 7/14/2015.
  * Model for Movie, convenient for code re-use
  */
-public class Movie {
+public class Movie implements Parcelable {
     public static final String FLAG_MOVIE = "com.yyz.android.popularmovies.FLAG_MOVIE";
     public static final String ID="id";
     public static final String TITLE="original_title";
@@ -93,6 +95,41 @@ public class Movie {
     public String getRating(){
         return vote_average+"/10.0";
     }
+    //Implement Parcel
+    private Movie(Parcel in){
+        id=in.readInt();
+        title=in.readString();
+        overview=in.readString();
+        release_date=in.readString();
+        poster_path=in.readString();
+        backdrop_path=in.readString();
+        popularity=in.readDouble();
+        vote_average=in.readDouble();
+        vote_count=in.readInt();
+    }
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
 
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeInt(id);
+        parcel.writeString(title);
+        parcel.writeString(overview);
+        parcel.writeString(release_date);
+        parcel.writeString(poster_path);
+        parcel.writeString(backdrop_path);
+        parcel.writeDouble(popularity);
+        parcel.writeDouble(vote_average);
+        parcel.writeInt(vote_count);
+    }
+    public int describeContents() {
+        return 0;
+    }
 
 }
