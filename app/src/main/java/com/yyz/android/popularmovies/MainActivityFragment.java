@@ -52,8 +52,9 @@ public class MainActivityFragment extends Fragment
     private boolean mIsLoading = false;
     private int mPagesLoaded = 0;
     private ImageAdapter mImages;
-    Collection<Movie> MovieSet;
-    ArrayList<Movie> list;
+    private static final String MOVIES_KEY = "mKey";
+
+    ArrayList<Movie> mlist;
 
 
 
@@ -215,7 +216,10 @@ public class MainActivityFragment extends Fragment
             }
             mPagesLoaded++;
             stopLoading();
-            mImages.addAll(ms);
+            mlist=new ArrayList<>();
+            mlist.addAll(ms);
+            mImages.addAll(mlist);
+
         }
     }
 
@@ -259,11 +263,21 @@ public class MainActivityFragment extends Fragment
         View rootView=inflater.inflate(R.layout.fragment_main, container, false);
         PreferenceManager.getDefaultSharedPreferences(getActivity())
                 .registerOnSharedPreferenceChangeListener(this);
+
         mImages=new ImageAdapter(getActivity());
         gridview = (GridView) rootView.findViewById(R.id.gridview);
         gridview.setAdapter(mImages);
 
-
+//        if(savedInstanceState == null || !savedInstanceState.containsKey("key")) {
+//
+//            list = new ArrayList<Movie>();
+//            mImages.
+//            for(int i = 0; i < numbers.length; i++)
+//                list.add(new Movie(numbers[i], colors[i]));
+//        }
+//        else {
+//            list = savedInstanceState.getParcelableArrayList("key");
+//        }
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -295,11 +309,25 @@ public class MainActivityFragment extends Fragment
                 }
         );
 
+        if (savedInstanceState != null) {
+
+            if (savedInstanceState.containsKey(MOVIES_KEY)) {
+                mlist = savedInstanceState.getParcelableArrayList(MOVIES_KEY);
+                mImages.addAll(mlist);
+            }
+        }
         startLoading();
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
 
+        if (mlist != null) {
+            outState.putParcelableArrayList(MOVIES_KEY, mlist);
+        }
+        super.onSaveInstanceState(outState);
+    }
 
 
     private boolean isTwoPane;
